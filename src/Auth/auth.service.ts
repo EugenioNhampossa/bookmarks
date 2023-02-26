@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDTO } from './dto';
 import * as argon from 'argon2';
