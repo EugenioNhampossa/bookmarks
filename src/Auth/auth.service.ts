@@ -26,7 +26,7 @@ export class AuthService {
 
       delete user.hash; // deletes the hash atribute from user.
 
-      return user;
+      return this.signToken(user.id, user.email);
     } catch (error) {
       if (error.code === 'P2002') {
         throw new ForbiddenException('Credentials Taken');
