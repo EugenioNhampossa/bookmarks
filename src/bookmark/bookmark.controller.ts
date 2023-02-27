@@ -1,15 +1,30 @@
-import { Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { JwtGuard } from 'src/Auth/guard';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { GetUser } from '../Auth/decorator';
+import { JwtGuard } from '../Auth/guard';
+import { BookmarkService } from './bookmark.service';
+import { CreateBookmarkDTO } from './dto';
 
 @UseGuards(JwtGuard)
-@Controller('bookmark')
+@Controller('bookmarks')
 export class BookmarkController {
+  constructor(private bookmarkService: BookmarkService) {}
   @Get()
-  getBookmarks() {}
+  getBookmarks(@GetUser('id') userId: number) {
+    return this.bookmarkService.getBookmarks(userId);
+  }
 
-  @Get()
-  getBookmarksById() {}
+  @Get(':id')
+  getBookmarkById(@Param('id') id: string) {
+    console.log({ id });
+
+    return this.bookmarkService.getBookmarkById(parseInt(id));
+  }
 
   @Post()
-  createBookmark() {}
+  createBookmark(
+    @GetUser('id') userId: number,
+    @Body() dto: CreateBookmarkDTO,
+  ) {
+    return this.bookmarkService.createBookmark(userId, dto);
+  }
 }

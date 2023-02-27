@@ -5,6 +5,7 @@ import { AppModule } from '../src/app.module';
 import * as pactum from 'pactum';
 import { AuthDTO } from 'src/Auth/dto';
 import { EditUserDTO } from 'src/user/dto';
+import { CreateBookmarkDTO } from 'src/bookmark/dto';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -140,9 +141,40 @@ describe('App e2e', () => {
     });
   });
   describe('Bookmarks', () => {
-    describe('Create bookmark', () => {});
-    describe('Get bookmarks', () => {});
-    describe('Get bookmark by id', () => {});
+    describe('Create bookmark', () => {
+      const dto: CreateBookmarkDTO = {
+        link: 'https://bookmark.com/1',
+        title: 'Bookmark1',
+        description: 'This is the first bookmark',
+      };
+      it('should create bookmark', () => {
+        return pactum
+          .spec()
+          .withHeaders({ Authorization: 'Bearer $S{token}' })
+          .post('/bookmarks/')
+          .withBody(dto)
+          .expectStatus(201)
+          .stores('bookmarkId', 'id');
+      });
+    });
+
+    describe('Get bookmark by id', () => {
+      it('should get a bookmark by id', () => {
+        return pactum
+          .spec()
+          .withHeaders({ Authorization: 'Bearer $S{token}' })
+          .get('/bookmarks/')
+          .withPathParams({ id: '$S{bookmarkId}' })
+          .expectStatus(200)
+          .inspect();
+      });
+    });
+    describe('Get all bookmarks', () => {
+      it('should get all bookmarks', () => {
+        pactum.spec().get('bookmarks').expectStatus(200);
+      });
+    });
+
     describe('Edit bookmark', () => {});
     describe('Delete bookmark', () => {});
   });
