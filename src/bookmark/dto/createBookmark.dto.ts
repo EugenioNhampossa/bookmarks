@@ -1,7 +1,8 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateBookmarkDTO {
   @IsString()
+  @IsNotEmpty()
   title: string;
 
   @IsString()
@@ -9,5 +10,6 @@ export class CreateBookmarkDTO {
   description?: string;
 
   @IsString()
+  @IsNotEmpty()
   link: string;
 }

@@ -5,7 +5,7 @@ import { AppModule } from '../src/app.module';
 import * as pactum from 'pactum';
 import { AuthDTO } from 'src/Auth/dto';
 import { EditUserDTO } from 'src/user/dto';
-import { CreateBookmarkDTO } from 'src/bookmark/dto';
+import { CreateBookmarkDTO, EditBookmarkDTO } from 'src/bookmark/dto';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -140,6 +140,7 @@ describe('App e2e', () => {
       });
     });
   });
+
   describe('Bookmarks', () => {
     describe('Create bookmark', () => {
       const dto: CreateBookmarkDTO = {
@@ -158,25 +159,55 @@ describe('App e2e', () => {
       });
     });
 
+    describe('Get all bookmarks', () => {
+      it('should get all bookmarks', () => {
+        pactum
+          .spec()
+          .withHeaders({ Authorization: 'Bearer $S{token}' })
+          .get('/bookmarks')
+          .expectStatus(200);
+      });
+    });
+
     describe('Get bookmark by id', () => {
       it('should get a bookmark by id', () => {
         return pactum
           .spec()
           .withHeaders({ Authorization: 'Bearer $S{token}' })
-          .get('/bookmarks/')
-          .withPathParams({ id: '$S{bookmarkId}' })
-          .expectStatus(200)
-          .inspect();
-      });
-    });
-    describe('Get all bookmarks', () => {
-      it('should get all bookmarks', () => {
-        pactum.spec().get('bookmarks').expectStatus(200);
+          .get('/bookmarks/{id}')
+          .withPathParams('id', '$S{bookmarkId}')
+          .expectStatus(200);
       });
     });
 
-    describe('Edit bookmark', () => {});
-    describe('Delete bookmark', () => {});
+    describe('Edit bookmark', () => {
+      const dto: EditBookmarkDTO = {
+        link: 'https://bookmark.com/4',
+        title: 'Bookmark4',
+        description: 'This is the second bookmark',
+      };
+      it('should edit bookmark', () => {
+        pactum
+          .spec()
+          .patch('/bookmarks/{id}')
+          .withPathParams('id', '$S{bookmarkId}')
+          .withHeaders({ Authorization: 'Bearer $S{token}' })
+          .withBody(dto)
+          .expectStatus(200);
+      });
+    });
+
+    describe('Delete bookmark', () => {
+      it('should delete bookmark', () => {
+        pactum
+          .spec()
+          .delete('/bookmarks/{id}')
+          .withPathParams('id', '$S{bookmarkId}')
+          .withHeaders({ Authorization: 'Bearer $S{token}' })
+          .expectStatus(900)
+          .inspect();
+      });
+    });
   });
 
   it.todo('should pass');
